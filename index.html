@@ -3,95 +3,199 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QCM Builder</title>
+  <title>OSC26 — QCM</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
   <header>
     <div class="header-inner">
-      <h1>📝 QCM Builder</h1>
-      <p>Créez vos QCM facilement</p>
+      <div class="header-left">
+        <h1>OSC26 — QCM</h1>
+        <p>Entraînement &amp; création de QCM</p>
+      </div>
+      <nav class="tab-nav">
+        <button class="tab-btn active" data-tab="quiz">🎯 Entraînement</button>
+        <button class="tab-btn" data-tab="builder">📝 Créer un QCM</button>
+      </nav>
     </div>
   </header>
 
-  <main>
-    <!-- Panneau gauche : formulaire -->
-    <section class="panel panel-form">
-      <div class="section-title">Nouveau QCM</div>
+  <!-- ═══════════════════════════════════════════════════════════
+       ONGLET 1 : ENTRAÎNEMENT
+  ════════════════════════════════════════════════════════════ -->
+  <div id="tab-quiz" class="tab-content active">
 
-      <div class="form-group">
-        <label for="qcm-title">Titre du QCM</label>
-        <input type="text" id="qcm-title" placeholder="Ex : Mathématiques - Chapitre 3" />
-      </div>
+    <!-- Écran de configuration -->
+    <section id="quiz-setup" class="quiz-setup">
+      <div class="setup-card">
+        <h2>Configurer votre session</h2>
 
-      <div class="form-group">
-        <label for="qcm-desc">Description (optionnel)</label>
-        <textarea id="qcm-desc" rows="2" placeholder="Consignes, contexte..."></textarea>
-      </div>
-
-      <hr />
-
-      <div class="section-title">Ajouter une question</div>
-
-      <div class="form-group">
-        <label for="q-text">Intitulé de la question</label>
-        <input type="text" id="q-text" placeholder="Ex : Quelle est la capitale de la France ?" />
-      </div>
-
-      <div id="choices-container">
-        <label>Choix de réponses <span class="hint">(cochez la bonne réponse)</span></label>
-        <div class="choice-row" data-index="0">
-          <input type="radio" name="correct" value="0" title="Bonne réponse" />
-          <input type="text" class="choice-input" placeholder="Choix A" />
-          <button class="btn-remove-choice" title="Supprimer">✕</button>
+        <div class="setup-field">
+          <label>Module</label>
+          <div id="module-buttons" class="module-buttons"></div>
         </div>
-        <div class="choice-row" data-index="1">
-          <input type="radio" name="correct" value="1" title="Bonne réponse" />
-          <input type="text" class="choice-input" placeholder="Choix B" />
-          <button class="btn-remove-choice" title="Supprimer">✕</button>
+
+        <div class="setup-field">
+          <label>Nombre de questions</label>
+          <div class="qty-selector">
+            <button class="qty-btn" data-qty="10">10</button>
+            <button class="qty-btn" data-qty="20">20</button>
+            <button class="qty-btn active" data-qty="30">30</button>
+            <button class="qty-btn" data-qty="all">Toutes</button>
+          </div>
+          <p id="available-count" class="avail-info"></p>
         </div>
-      </div>
 
-      <button class="btn btn-secondary" id="btn-add-choice">+ Ajouter un choix</button>
-
-      <div class="form-group" style="margin-top:1rem;">
-        <label for="q-explication">Explication (optionnel)</label>
-        <textarea id="q-explication" rows="2" placeholder="Pourquoi cette réponse ?"></textarea>
-      </div>
-
-      <div class="form-actions">
-        <button class="btn btn-primary" id="btn-add-question">Ajouter la question</button>
+        <button class="btn btn-start" id="btn-start-quiz">Commencer →</button>
       </div>
     </section>
 
-    <!-- Panneau droit : aperçu -->
-    <section class="panel panel-preview">
-      <div class="section-title">
-        Aperçu du QCM
-        <span id="question-count" class="badge">0 question(s)</span>
+    <!-- Écran de quiz -->
+    <section id="quiz-screen" class="quiz-screen hidden">
+      <div class="quiz-topbar">
+        <button class="btn btn-sm btn-secondary" id="btn-quit-quiz">← Quitter</button>
+        <div class="quiz-progress-text">
+          Question <span id="q-current">1</span> / <span id="q-total">30</span>
+        </div>
+        <div class="quiz-score-live">Score : <span id="live-score">0</span></div>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progress-bar"></div>
       </div>
 
-      <div id="preview-header" class="preview-header hidden">
-        <h2 id="preview-title"></h2>
-        <p id="preview-desc"></p>
-      </div>
-
-      <div id="questions-list">
-        <div class="empty-state">Aucune question pour l'instant.<br/>Remplissez le formulaire à gauche.</div>
-      </div>
-
-      <div class="preview-actions">
-        <button class="btn btn-danger" id="btn-clear" title="Tout effacer">🗑 Effacer tout</button>
-        <button class="btn btn-export" id="btn-export-json" title="Exporter JSON">⬇ JSON</button>
-        <button class="btn btn-export" id="btn-export-pdf" title="Imprimer / PDF">🖨 PDF</button>
+      <div class="quiz-card" id="quiz-card">
+        <div class="quiz-module-tag" id="quiz-module-tag"></div>
+        <p class="quiz-question-text" id="quiz-question-text"></p>
+        <div class="quiz-choices" id="quiz-choices"></div>
+        <div class="quiz-feedback hidden" id="quiz-feedback"></div>
+        <div class="quiz-nav">
+          <button class="btn btn-primary" id="btn-validate" disabled>Valider</button>
+          <button class="btn btn-secondary hidden" id="btn-next">Suivant →</button>
+        </div>
       </div>
     </section>
-  </main>
 
-  <!-- Toast notification -->
+    <!-- Écran de résultats -->
+    <section id="quiz-results" class="quiz-results hidden">
+      <div class="results-card">
+        <div class="results-score-circle" id="score-circle">
+          <span id="score-pct">--</span>
+          <small>%</small>
+        </div>
+        <h2 id="results-title">Résultats</h2>
+        <p id="results-subtitle"></p>
+
+        <div class="results-stats">
+          <div class="stat-box correct">
+            <span class="stat-num" id="stat-correct">0</span>
+            <span class="stat-label">Correctes</span>
+          </div>
+          <div class="stat-box wrong">
+            <span class="stat-num" id="stat-wrong">0</span>
+            <span class="stat-label">Incorrectes</span>
+          </div>
+          <div class="stat-box total">
+            <span class="stat-num" id="stat-total">0</span>
+            <span class="stat-label">Questions</span>
+          </div>
+        </div>
+
+        <div class="results-actions">
+          <button class="btn btn-primary" id="btn-retry">🔁 Recommencer</button>
+          <button class="btn btn-secondary" id="btn-review">📋 Voir les corrections</button>
+          <button class="btn btn-secondary" id="btn-back-setup">⬅ Menu</button>
+        </div>
+
+        <div id="review-list" class="review-list hidden"></div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       ONGLET 2 : CRÉER UN QCM
+  ════════════════════════════════════════════════════════════ -->
+  <div id="tab-builder" class="tab-content hidden">
+    <main>
+      <!-- Panneau gauche : formulaire -->
+      <section class="panel panel-form">
+        <div class="section-title">Nouveau QCM</div>
+
+        <div class="form-group">
+          <label for="qcm-title">Titre du QCM</label>
+          <input type="text" id="qcm-title" placeholder="Ex : Mathématiques — Chapitre 3" />
+        </div>
+
+        <div class="form-group">
+          <label for="qcm-desc">Description (optionnel)</label>
+          <textarea id="qcm-desc" rows="2" placeholder="Consignes, contexte…"></textarea>
+        </div>
+
+        <hr />
+
+        <div class="section-title">Ajouter une question</div>
+
+        <div class="form-group">
+          <label for="q-text">Intitulé de la question</label>
+          <input type="text" id="q-text" placeholder="Ex : Quelle est la capitale de la France ?" />
+        </div>
+
+        <div id="choices-container">
+          <label>Choix de réponses <span class="hint">(cochez la bonne réponse)</span></label>
+          <div class="choice-row" data-index="0">
+            <input type="radio" name="correct" value="0" title="Bonne réponse" />
+            <input type="text" class="choice-input" placeholder="Choix A" />
+            <button class="btn-remove-choice" title="Supprimer">✕</button>
+          </div>
+          <div class="choice-row" data-index="1">
+            <input type="radio" name="correct" value="1" title="Bonne réponse" />
+            <input type="text" class="choice-input" placeholder="Choix B" />
+            <button class="btn-remove-choice" title="Supprimer">✕</button>
+          </div>
+        </div>
+
+        <button class="btn btn-secondary" id="btn-add-choice">+ Ajouter un choix</button>
+
+        <div class="form-group" style="margin-top:1rem;">
+          <label for="q-explication">Explication (optionnel)</label>
+          <textarea id="q-explication" rows="2" placeholder="Pourquoi cette réponse ?"></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn btn-primary" id="btn-add-question">Ajouter la question</button>
+        </div>
+      </section>
+
+      <!-- Panneau droit : aperçu -->
+      <section class="panel panel-preview">
+        <div class="section-title">
+          Aperçu du QCM
+          <span id="question-count" class="badge">0 question(s)</span>
+        </div>
+
+        <div id="preview-header" class="preview-header hidden">
+          <h2 id="preview-title"></h2>
+          <p id="preview-desc"></p>
+        </div>
+
+        <div id="questions-list">
+          <div class="empty-state">Aucune question pour l'instant.<br/>Remplissez le formulaire à gauche.</div>
+        </div>
+
+        <div class="preview-actions">
+          <button class="btn btn-danger" id="btn-clear">🗑 Effacer tout</button>
+          <button class="btn btn-export" id="btn-export-json">⬇ JSON</button>
+          <button class="btn btn-export" id="btn-export-pdf">🖨 PDF</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Toast -->
   <div id="toast" class="toast hidden"></div>
 
-  <!-- Modal confirmation -->
+  <!-- Modal -->
   <div id="modal-overlay" class="modal-overlay hidden">
     <div class="modal">
       <p id="modal-message">Êtes-vous sûr ?</p>
@@ -102,6 +206,7 @@
     </div>
   </div>
 
+  <script src="db.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
