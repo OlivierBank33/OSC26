@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gros QCM – Cours théoriques BA701</title>
+<style>
+:root{--bg:#0f1720;--card:#17212d;--line:#263445;--tx:#e8eef5;--mut:#93a4b8;--acc:#4da3ff;--ok:#2fbf71;--ko:#ef5b5b}
+@media (prefers-color-scheme: light){:root{--bg:#f4f6f9;--card:#fff;--line:#dde3ea;--tx:#15202b;--mut:#5b6b7d;--acc:#1f6fd1;--ok:#1d9a57;--ko:#d23c3c}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:780px;margin:0 auto;padding:16px}
+h1{font-size:20px;margin:4px 0 2px} h2{font-size:18px;margin:0 0 4px}
+.sub,.small{color:var(--mut);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-top:12px}
+.mat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;cursor:pointer;text-align:left;color:var(--tx);font:inherit}
+.mat:hover{border-color:var(--acc)}
+.mat b{display:block;font-size:17px}
+.mat .n{color:var(--mut);font-size:13px}
+.mat .pct{margin-top:6px;font-size:13px}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0 12px}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--tx);padding:7px 11px;border-radius:999px;cursor:pointer;font-size:13.5px;text-align:left}
+.chip.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.btn{border:0;background:var(--acc);color:#fff;padding:11px 16px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer}
+.btn.sec{background:transparent;border:1px solid var(--line);color:var(--tx)}
+.btn:disabled{opacity:.4;cursor:default}
+.link{background:none;border:0;color:var(--acc);cursor:pointer;font-size:14px;padding:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:12px}
+.meta{display:flex;justify-content:space-between;color:var(--mut);font-size:13px;margin-bottom:8px}
+.bar{height:6px;background:var(--line);border-radius:6px;overflow:hidden;margin-bottom:12px}
+.bar i{display:block;height:100%;background:var(--acc);width:0}
+.q{font-size:17px;font-weight:600;margin:6px 0 14px}
+.opt{display:block;width:100%;text-align:left;border:1px solid var(--line);background:transparent;color:var(--tx);padding:12px 14px;border-radius:10px;margin:8px 0;font-size:15px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--acc)}
+.opt.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 16%,transparent)}
+.opt.ko{border-color:var(--ko);background:color-mix(in srgb,var(--ko) 16%,transparent)}
+.exp{margin-top:12px;padding:12px;border-radius:10px;background:color-mix(in srgb,var(--acc) 10%,transparent);font-size:15px}
+.exp b.k{color:var(--ok)} .exp b.x{color:var(--ko)}
+.tag{font-size:12px;padding:2px 8px;border-radius:6px;background:var(--line)}
+.score{font-size:34px;font-weight:700;margin:6px 0}
+table{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+td,th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:left}
+.miss{font-size:14px;margin:6px 0;padding:8px;border-left:3px solid var(--ko);background:color-mix(in srgb,var(--ko) 7%,transparent);border-radius:4px}
+.hide{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Gros QCM : cours théoriques</h1>
+  <div class="sub" id="tot">Chargement…</div>
+
+  <div id="home"><div class="grid" id="mats"></div>
+    <div class="card"><div class="small">Mélanger plusieurs matières</div>
+      <div class="chips" id="mixMats"></div>
+      <div class="row"><button class="btn sec" id="goMix">Lancer 30 questions mélangées</button></div>
+    </div>
+  </div>
+
+  <div id="setup" class="card hide">
+    <button class="link" id="back">← Matières</button>
+    <h2 id="sTitle" style="margin-top:8px"></h2>
+    <div class="small">Chapitres (aucun sélectionné = tous)</div>
+    <div class="chips" id="chaps"></div>
+    <div class="small">Nombre de questions</div>
+    <div class="chips" id="nbs"></div>
+    <div class="row">
+      <button class="btn" id="go">Lancer</button>
+      <button class="btn sec" id="goMiss">Mes erreurs (<span id="nMiss">0</span>)</button>
+    </div>
+  </div>
+
+  <div id="quiz" class="card hide">
+    <div class="meta"><span id="pos"></span><span id="sc"></span></div>
+    <div class="bar"><i id="pb"></i></div>
+    <span class="tag" id="qm"></span>
+    <div class="q" id="qt"></div>
+    <div id="opts"></div>
+    <div id="exp" class="exp hide"></div>
+    <div class="row" style="justify-content:space-between;margin-top:12px">
+      <button class="btn sec" id="stop">Terminer</button>
+      <button class="btn" id="next" disabled>Suivante →</button>
+    </div>
+  </div>
+
+  <div id="end" class="card hide">
+    <div class="small">Score</div>
+    <div class="score" id="fs"></div>
+    <table id="tab"></table>
+    <h3 style="margin:16px 0 4px;font-size:16px">Questions ratées</h3>
+    <div id="missList"></div>
+    <div class="row" style="margin-top:12px">
+      <button class="btn" id="copy">Copier le résumé pour Claude</button>
+      <button class="btn sec" id="again">Retour</button>
+    </div>
+    <div class="small" id="copied"></div>
+  </div>
+</div>
+<script>
+let DB=[], cur=null, selC=new Set(), nb=20, run=[], i=0, good=0, answered=false, res={}, missed=[];
+const $=id=>document.getElementById(id);
+function st(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem(k)||"null");localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}}
+let miss=new Set(st("qcm2_miss")||[]), stats=st("qcm2_stats")||{};
+function shuffle(a){a=a.slice();for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]]}return a}
+function chapName(m,cid){const c=m.chapitres.find(c=>c.id===cid);return c?c.titre:cid}
+async function load(){
+  const idx=await (await fetch("data/index.json")).json();
+  DB=await Promise.all(idx.matieres.map(async f=>{const d=await (await fetch("data/"+f)).json();d.questions.forEach(q=>q.m=d.id);return d}));
+  const n=DB.reduce((s,d)=>s+d.questions.length,0);
+  $("tot").textContent=n+" questions · mis à jour le "+idx.maj+" · alimenté au fur et à mesure depuis les cours du Drive";
+  home();
+}
+function home(){
+  ["setup","quiz","end"].forEach(x=>$(x).classList.add("hide"));$("home").classList.remove("hide");
+  $("mats").innerHTML="";$("mixMats").innerHTML="";
+  DB.forEach(d=>{
+    const b=document.createElement("button");b.className="mat";
+    const s=stats[d.id];const nm=d.questions.filter(q=>miss.has(q.id)).length;
+    const nc=d.chapitres.filter(c=>d.questions.some(q=>q.c===c.id)).length;
+    b.innerHTML="<b>"+d.nom+"</b><span class='n'>"+d.questions.length+" questions · "+nc+"/"+d.chapitres.length+" chapitres</span><div class='pct'>"+(s?"Dernier score : "+s+" %":"Jamais fait")+(nm?" · "+nm+" erreurs":"")+"</div>";
+    b.onclick=()=>openMat(d);$("mats").appendChild(b);
+    const c=document.createElement("button");c.className="chip on";c.textContent=d.nom;c.dataset.id=d.id;c.onclick=()=>c.classList.toggle("on");$("mixMats").appendChild(c);
+  });
+}
+function openMat(d){
+  cur=d;selC=new Set();$("home").classList.add("hide");$("setup").classList.remove("hide");$("sTitle").textContent=d.nom;renderSetup();
+}
+function renderSetup(){
+  const d=cur;$("chaps").innerHTML="";
+  d.chapitres.forEach(c=>{const n=d.questions.filter(q=>q.c===c.id).length;
+    const b=document.createElement("button");b.className="chip"+(selC.has(c.id)?" on":"");
+    b.textContent=c.titre+" ("+(n||"à venir")+")";b.disabled=!n;if(!n)b.style.opacity=.45;
+    b.onclick=()=>{selC.has(c.id)?selC.delete(c.id):selC.add(c.id);renderSetup()};$("chaps").appendChild(b)});
+  $("nbs").innerHTML="";
+  [10,20,40,"Tout"].forEach(v=>{const b=document.createElement("button");b.className="chip"+(nb===v?" on":"");b.textContent=v;b.onclick=()=>{nb=v;renderSetup()};$("nbs").appendChild(b)});
+  const nm=d.questions.filter(q=>miss.has(q.id)).length;$("nMiss").textContent=nm;$("goMiss").disabled=!nm;
+}
+function start(pool,n){
+  run=shuffle(pool);if(n!=="Tout")run=run.slice(0,n);if(!run.length)return;
+  i=0;good=0;res={};missed=[];
+  ["home","setup","end"].forEach(x=>$(x).classList.add("hide"));$("quiz").classList.remove("hide");show();
+}
+function show(){
+  const q=run[i];answered=false;const d=DB.find(x=>x.id===q.m);
+  $("pos").textContent="Question "+(i+1)+" / "+run.length;$("sc").textContent=good+" bonnes";
+  $("pb").style.width=(i/run.length*100)+"%";
+  $("qm").textContent=d.nom+" · "+chapName(d,q.c);$("qt").textContent=q.t;
+  $("exp").classList.add("hide");$("next").disabled=true;$("next").textContent=i===run.length-1?"Voir le score":"Suivante →";
+  $("opts").innerHTML="";
+  shuffle(q.o.map((t,k)=>({t,k}))).forEach(o=>{const b=document.createElement("button");b.className="opt";b.textContent=o.t;b.dataset.k=o.k;b.onclick=()=>pick(b,o.k);$("opts").appendChild(b)});
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function pick(btn,k){
+  if(answered)return;answered=true;const q=run[i];const ok=k===0;
+  const key=q.m;res[key]=res[key]||[0,0];res[key][1]++;
+  if(ok){good++;res[key][0]++;miss.delete(q.id)}else{missed.push(q);miss.add(q.id)}
+  st("qcm2_miss",[...miss]);
+  [...$("opts").children].forEach(b=>{b.disabled=true;if(+b.dataset.k===0)b.classList.add("ok")});
+  if(!ok)btn.classList.add("ko");
+  $("exp").innerHTML=(ok?'<b class="k">Juste.</b> ':'<b class="x">Faux.</b> ')+q.e;$("exp").classList.remove("hide");
+  $("next").disabled=false;$("sc").textContent=good+" bonnes";
+}
+function finish(){
+  const done=Object.values(res).reduce((s,r)=>s+r[1],0);
+  Object.entries(res).forEach(([m,r])=>{stats[m]=Math.round(r[0]/r[1]*100)});st("qcm2_stats",stats);
+  $("quiz").classList.add("hide");$("end").classList.remove("hide");
+  $("fs").textContent=good+" / "+done+(done?" ("+Math.round(good/done*100)+" %)":"");
+  let h="<tr><th>Matière</th><th>Score</th></tr>";
+  Object.entries(res).forEach(([m,r])=>{const d=DB.find(x=>x.id===m);h+="<tr><td>"+d.nom+"</td><td>"+r[0]+" / "+r[1]+" ("+Math.round(r[0]/r[1]*100)+" %)</td></tr>"});
+  $("tab").innerHTML=h;
+  $("missList").innerHTML=missed.length?missed.map(q=>{const d=DB.find(x=>x.id===q.m);return '<div class="miss"><b>'+chapName(d,q.c)+"</b> · "+q.t+"<br><span class='small'>→ "+q.o[0]+"</span></div>"}).join(""):"<div class='small'>Aucune erreur.</div>";
+  $("copied").textContent="";
+}
+$("go").onclick=()=>start(cur.questions.filter(q=>!selC.size||selC.has(q.c)),nb);
+$("goMiss").onclick=()=>start(cur.questions.filter(q=>miss.has(q.id)),"Tout");
+$("goMix").onclick=()=>{const ids=[...$("mixMats").children].filter(c=>c.classList.contains("on")).map(c=>c.dataset.id);start(DB.filter(d=>ids.includes(d.id)).flatMap(d=>d.questions),30)};
+$("back").onclick=home;
+$("next").onclick=()=>{if(i<run.length-1){i++;show()}else finish()};
+$("stop").onclick=()=>{if(Object.keys(res).length)finish();else home()};
+$("again").onclick=()=>{cur?openMat(cur):home()};
+$("copy").onclick=async()=>{
+  const done=Object.values(res).reduce((s,r)=>s+r[1],0);
+  const t="QCM : "+good+"/"+done+"\n"+Object.entries(res).map(([m,r])=>m+" "+r[0]+"/"+r[1]).join(", ")+"\nRatées :\n"+(missed.map(q=>"- ["+q.c+"] "+q.t).join("\n")||"aucune");
+  try{await navigator.clipboard.writeText(t);$("copied").textContent="Copié, colle-le dans le chat."}catch(e){$("copied").textContent=t}
+};
+load().catch(e=>{$("tot").textContent="Erreur de chargement des questions : "+e.message});
+</script>
+</body>
+</html>
