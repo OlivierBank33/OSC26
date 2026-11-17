@@ -68,6 +68,7 @@ td,th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:left}
       <button class="btn" id="go">Lancer</button>
       <button class="btn sec" id="goMiss">Mes erreurs (<span id="nMiss">0</span>)</button>
     </div>
+    <div class="small" id="nNew" style="margin-top:8px"></div>
   </div>
 
   <div id="quiz" class="card hide">
@@ -100,7 +101,7 @@ td,th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:left}
 let DB=[], cur=null, selC=new Set(), nb=20, run=[], i=0, good=0, answered=false, res={}, missed=[];
 const $=id=>document.getElementById(id);
 function st(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem(k)||"null");localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}}
-let miss=new Set(st("qcm2_miss")||[]), stats=st("qcm2_stats")||{};
+let miss=new Set(st("qcm2_miss")||[]), stats=st("qcm2_stats")||{}, seen=st("qcm2_seen")||{};
 function shuffle(a){a=a.slice();for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]]}return a}
 function chapName(m,cid){const c=m.chapitres.find(c=>c.id===cid);return c?c.titre:cid}
 async function load(){
@@ -134,9 +135,17 @@ function renderSetup(){
   $("nbs").innerHTML="";
   [10,20,40,"Tout"].forEach(v=>{const b=document.createElement("button");b.className="chip"+(nb===v?" on":"");b.textContent=v;b.onclick=()=>{nb=v;renderSetup()};$("nbs").appendChild(b)});
   const nm=d.questions.filter(q=>miss.has(q.id)).length;$("nMiss").textContent=nm;$("goMiss").disabled=!nm;
+  const nn=d.questions.filter(q=>!seen[q.id]).length;$("nNew")&&($("nNew").textContent=nn+" jamais vues sur "+d.questions.length+" · ordre : ratées (max 1/3), puis jamais vues, puis réussies les plus anciennes");
 }
-function start(pool,n){
-  run=shuffle(pool);if(n!=="Tout")run=run.slice(0,n);if(!run.length)return;
+function order(pool,n){
+  const N=n==="Tout"?pool.length:n;
+  const A=shuffle(pool.filter(q=>miss.has(q.id))), B=shuffle(pool.filter(q=>!miss.has(q.id)&&!seen[q.id])),
+        C=shuffle(pool.filter(q=>!miss.has(q.id)&&seen[q.id])).sort((a,b)=>seen[a.id]-seen[b.id]);
+  const a=A.slice(0,Math.ceil(N/3));
+  return shuffle([...a,...B,...A.slice(a.length),...C].slice(0,N));
+}
+function start(pool,n,raw){
+  run=raw?shuffle(pool):order(pool,n);if(!run.length)return;
   i=0;good=0;res={};missed=[];
   ["home","setup","end"].forEach(x=>$(x).classList.add("hide"));$("quiz").classList.remove("hide");show();
 }
@@ -154,7 +163,7 @@ function pick(btn,k){
   if(answered)return;answered=true;const q=run[i];const ok=k===0;
   const key=q.m;res[key]=res[key]||[0,0];res[key][1]++;
   if(ok){good++;res[key][0]++;miss.delete(q.id)}else{missed.push(q);miss.add(q.id)}
-  st("qcm2_miss",[...miss]);
+  seen[q.id]=Date.now();st("qcm2_miss",[...miss]);st("qcm2_seen",seen);
   [...$("opts").children].forEach(b=>{b.disabled=true;if(+b.dataset.k===0)b.classList.add("ok")});
   if(!ok)btn.classList.add("ko");
   $("exp").innerHTML=(ok?'<b class="k">Juste.</b> ':'<b class="x">Faux.</b> ')+q.e;$("exp").classList.remove("hide");
@@ -172,7 +181,7 @@ function finish(){
   $("copied").textContent="";
 }
 $("go").onclick=()=>start(cur.questions.filter(q=>!selC.size||selC.has(q.c)),nb);
-$("goMiss").onclick=()=>start(cur.questions.filter(q=>miss.has(q.id)),"Tout");
+$("goMiss").onclick=()=>start(cur.questions.filter(q=>miss.has(q.id)),"Tout",true);
 $("goMix").onclick=()=>{const ids=[...$("mixMats").children].filter(c=>c.classList.contains("on")).map(c=>c.dataset.id);start(DB.filter(d=>ids.includes(d.id)).flatMap(d=>d.questions),30)};
 $("back").onclick=home;
 $("next").onclick=()=>{if(i<run.length-1){i++;show()}else finish()};
