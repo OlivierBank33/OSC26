@@ -6,6 +6,8 @@ MAT = {"id": "SB", "nom": "Systèmes de bord (instruments)", "chapitres": [
     ("SB15", "15. Gyroscopes"), ("SB16", "16. Conservateur de cap"), ("SB19", "19. Compas télémagnétique"),
     ("SB20", "20. Horizon artificiel"), ("SB21", "21. Indicateur de virage et bille"), ("SB22", "22. AHRS"),
     ("SB23", "23. INS"), ("SB24", "24. IRS"), ("SB25", "25. EFIS"), ("SB26", "26. ECAM"),
+    ("SB28", "28. Pilote automatique"), ("SB29", "29. Directeur de vol"), ("SB30", "30. Flight warning system"),
+    ("SB31", "31. Trims"), ("SB32", "32. Protections du domaine de vol"),
 ]}
 # Règle d'écriture : les 4 réponses ont la même longueur et le même niveau de détail.
 # Les leurres sont des erreurs plausibles (valeurs inversées, mécanisme voisin, concept confondu).
@@ -418,3 +420,63 @@ q("SB26", "L'E/WD affiche…", ["Paramètres moteurs et alarmes", "Schémas des 
 q("SB26", "Lequel n'est PAS affiché sur le SD ?", ["Le N1 et l'EGT", "La page carburant", "La page statut", "Les check-lists"], "")
 q("SB26", "Une alarme rouge ECAM demande…", ["Une action immédiate", "Une simple vigilance", "Aucune action", "Une action après vol"], "Ambre : conscience, pas d'action immédiate.")
 q("SB26", "Panne d'un écran ECAM :", ["L'E/WD passe sur le SD", "Le SD passe sur l'E/WD", "Le PFD remplace l'E/WD", "Tout est perdu"], "Le ND peut aussi être utilisé.")
+
+# ---- SB20 (compléments)
+q("SB20", "Horizon pneumatique, accélération en ligne droite : il affiche…", ["Assiette à cabrer, aile droite basse", "Assiette à piquer, aile gauche basse", "Assiette à cabrer, aile gauche basse", "Assiette à piquer, aile droite basse"], "Erreur d'accélération de l'horizon pneumatique (pendulaire).")
+q("SB20", "Limites d'un horizon moderne :", ["±85° en tangage, roulis libre", "±60° en tangage, 110° en roulis", "±45° en tangage, 90° en roulis", "±90° en tangage, 60° en roulis"], "Anciens modèles : ±60° en tangage et 110° en roulis.")
+q("SB20", "Précision d'un horizon électrique :", ["±1° en tangage, ±0,5° en roulis", "±0,5° en tangage, ±1° en roulis", "±2° en tangage, ±1° en roulis", "±1° en tangage, ±2° en roulis"], "Il est plus rigide, avec une érection rapide.")
+# ---- SB22 (compléments)
+q("SB22", "Ce que l'AHRS ne fournit pas :", ["La position et le cap vrai", "Le cap et l'assiette", "Les vitesses angulaires", "Les accélérations"], "Contrairement à l'INS ou l'IRS.")
+q("SB22", "Capteurs d'un AHRS :", ["Gyros solid state, accéléromètres et magnétomètres MEMS", "Gyros à toupie, flux valve et capsule anéroïde", "Gyrolasers, plateforme stabilisée et ADC", "Gyros pneumatiques, bille et compas à liquide"], "Aucune pièce mobile.")
+# ---- SB28
+q("SB28", "Un PA est un système…", ["En boucle fermée (avec retour)", "En boucle ouverte (sans retour)", "Passif, comme le directeur de vol", "Sans détecteur d'écart"], "La boucle fermée lui permet de se corriger lui-même.")
+q("SB28", "La boucle interne (inner loop) du PA assure…", ["La stabilisation (assiette, ailes à plat)", "La tenue d'altitude et du cap choisi", "Le suivi des routes LNAV et VNAV", "La gestion de la poussée moteur"], "La boucle externe (ALT, HDG, LNAV…) commande la boucle interne.")
+q("SB28", "PA exigé par l'EASA en IFR ou de nuit en monopilote :", ["2 axes avec ALT et HDG", "1 axe avec maintien d'ailes", "3 axes avec autoland", "2 axes avec LNAV et VNAV"], "")
+q("SB28", "Un PA 3 axes (roulis, tangage, lacet) est nécessaire pour…", ["L'atterrissage automatique", "La tenue d'une altitude", "Le suivi d'un axe VOR", "La tenue d'un cap donné"], "")
+q("SB28", "Servo de PA monté en série :", ["Gouverne bouge, manche fixe", "Gouverne et manche bougent", "Manche bouge, gouverne fixe", "Ni l'un ni l'autre ne bouge"], "En parallèle, le manche bouge avec la gouverne.")
+q("SB28", "En CWS, quand le pilote lâche le manche, l'avion…", ["Garde son assiette et son inclinaison", "Revient ailes à plat et en palier", "Reprend le dernier mode sélectionné", "Rend la main en pilotage manuel"], "Pas de CWS au décollage ni à l'atterrissage.")
+q("SB28", "Si la boucle de synchronisation est en panne :", ["Le PA ne peut pas s'engager", "Le PA s'engage avec un à-coup", "Le PA s'engage en CWS seulement", "Le PA s'engage sans tenue d'altitude"], "Elle aligne la chaîne tangage sur l'assiette réelle avant l'engagement.")
+q("SB28", "Cause de débrayage automatique du PA :", ["Perte de l'auto-trim", "Passage en mode V/S", "Changement de calage altimétrique", "Sélection d'un nouveau cap"], "Aussi : perte de l'attitude, panne du calculateur.")
+q("SB28", "En ALT HOLD, le pilote change le calage altimétrique :", ["Aucun effet, le PA tient la pression", "L'avion monte ou descend aussitôt", "Le PA se débraye automatiquement", "L'altitude cible se recale seule"], "Le PA prend sa pression sur la source statique.")
+q("SB28", "En mode V/S, la vitesse de l'avion…", ["N'est pas tenue par le PA", "Est tenue par l'assiette", "Est tenue par la poussée", "Est limitée à VMO seulement"], "Idem en pitch hold.")
+q("SB28", "Au-dessus d'un VOR (cône de confusion), le PA…", ["Garde le cap jusqu'au retour du signal", "Se débraye automatiquement, alarme", "Revient ailes à plat en mode ATT", "Vire vers la balise suivante du plan"], "Le mode VOR reste armé.")
+q("SB28", "Mode FLARE en autoland : début à…", ["50 ft radiosonde", "100 ft radiosonde", "200 ft radiosonde", "20 ft radiosonde"], "La Vz diminue avec la hauteur.")
+q("SB28", "Airbus, PA engagé, le pilote bouge le minimanche :", ["Le PA se débraye", "Le PA ignore l'ordre", "Le PA passe en CWS", "Le minimanche est verrouillé"], "Sur Airbus, ni minimanche ni palonniers ne bougent sous PA.")
+q("SB28", "Boeing, PA engagé : qu'est-ce qui bouge ?", ["Manche et roue de trim", "Palonniers et manche", "Palonniers seulement", "Rien ne bouge"], "Tirer sur le manche sous PA peut provoquer un emballement du trim.")
+# ---- SB29
+q("SB29", "Le directeur de vol est un système…", ["Passif qui indique quoi faire", "Actif qui agit sur les gouvernes", "Passif qui montre la trajectoire", "Actif qui gère la poussée"], "Le PA est actif. Le FPV montre la trajectoire, sans être un directeur.")
+q("SB29", "Référence pour suivre les barres du DV :", ["La maquette avion", "La ligne d'horizon", "Le FPV", "L'aiguille de glide"], "On place la maquette à l'intersection des barres.")
+q("SB29", "Avec deux DV en désaccord, les barres…", ["Disparaissent", "Clignotent en ambre", "Suivent le DV1", "Suivent le DV2"], "")
+q("SB29", "FMA « 2FD2 » signifie :", ["Le DV2 alimente les deux PFD", "Chaque DV sur son propre PFD", "Seul le DV1 est disponible", "Les deux DV sont coupés"], "1FD2 = normal ; 1FD- ou -FD2 = un seul DV affiché.")
+q("SB29", "DV affiché mais guidage faux :", ["On coupe le DV", "On suit le DV quand même", "On engage le PA", "On passe en CWS"], "On coupe aussi le DV en pilotage à vue.")
+q("SB29", "Au roulage sur piste ILS par faible visibilité, la barre de roulis est remplacée par…", ["Une barre de lacet", "Le FPV", "Un index de glide", "La bille"], "Elle aide à suivre le LOC au sol.")
+# ---- SB30
+q("SB30", "Une alerte de niveau A (warning) exige…", ["Une action immédiate", "Une conscience immédiate", "Une simple information", "Une action après le vol"], "Niveau B (caution) : conscience immédiate, action ensuite. C : advisory.")
+q("SB30", "Couleur d'un caution :", ["Ambre ou jaune", "Rouge", "Bleu ou blanc", "Vert"], "Warning = rouge ; advisory = bleu ou blanc.")
+q("SB30", "Une alerte doit passer par au moins…", ["2 canaux (visuel, sonore, tactile)", "1 canal, visuel uniquement", "3 canaux toujours simultanés", "1 canal, sonore uniquement"], "Le sonore est obligatoire si le pilote doit reprendre la main.")
+q("SB30", "Ordre de la procédure master warning :", ["Identifier, couper le son, agir", "Couper le son, agir, identifier", "Agir, identifier, couper le son", "Couper le son, identifier, attendre"], "Réponse immédiate ne veut pas dire action immédiate.")
+q("SB30", "Laquelle de ces alarmes sonne en continu ?", ["Configuration train", "Master caution", "Changement d'altitude", "Message ACARS"], "Aussi : survitesse, configuration au décollage, GPWS.")
+q("SB30", "Marge réglementaire entre l'alarme et le décrochage :", ["Le plus grand de 5 kt ou 5 % de la CAS", "Le plus petit de 5 kt ou 5 % de la CAS", "Le plus grand de 10 kt ou 10 % de la CAS", "Toujours 5 kt"], "")
+q("SB30", "Pourquoi l'alarme de décrochage se base-t-elle sur l'incidence ?", ["L'incidence de décrochage ne dépend pas de la masse", "La vitesse de décrochage ne varie jamais", "L'incidence se mesure plus facilement", "La CAS n'est pas fiable près du sol"], "La vitesse de décrochage, elle, varie avec la masse.")
+q("SB30", "Réaction à l'alarme OVERSPEED :", ["Réduire au ralenti et cabrer", "Pleine poussée et piquer", "Sortir le train et les volets", "Débrayer le PA et attendre"], "Master warning rouge impossible à annuler.")
+# ---- SB31
+q("SB31", "Ordre de réglage des trims :", ["Tangage, lacet, roulis", "Roulis, lacet, tangage", "Lacet, tangage, roulis", "Tangage, roulis, lacet"], "")
+q("SB31", "Le PA ne peut commander que le trim…", ["De profondeur", "De direction", "D'ailerons", "Des trois axes"], "Trimer manuellement débraye le PA.")
+q("SB31", "Panne moteur sur bimoteur : on met du pied…", ["Côté moteur vivant, puis on trime", "Côté moteur en panne, puis on trime", "Côté moteur vivant, sans trimer", "Aucun, le trim d'ailerons suffit"], "")
+q("SB31", "Pourquoi ne pas utiliser le trim d'ailerons sous PA ?", ["Roulis brutal au débrayage", "Le PA ne le détecte pas", "Il débraye aussitôt le PA", "Il bloque les ailerons"], "")
+q("SB31", "Rôle de l'auto pitch trim sous PA :", ["Avion trimé au débrayage, sans à-coup", "Compenser le Mach tuck", "Limiter l'incidence maximale", "Centrer la bille en virage"], "Il annule le moment de charnière. En cas de panne, le PA se débraye.")
+q("SB31", "Pourquoi l'emballement du trim de profondeur est-il dangereux ?", ["Le THS a plus d'autorité que la profondeur", "La profondeur se bloque en butée", "Le PA ne peut plus jamais s'engager", "Le manche devient totalement inopérant"], "On applique la procédure de mémoire.")
+q("SB31", "Le Mach trim compense…", ["Le piqué dû au recul du CP (Mach tuck)", "Le cabré dû à l'avancée du CP", "Le cabré à forte incidence", "Le roulis induit en virage"], "Indépendant du PA, actif au-dessus d'un Mach donné.")
+q("SB31", "L'alpha trim braque le THS…", ["À piquer, à haut Mach et forte incidence", "À cabrer, à haut Mach et faible incidence", "À piquer, volets sortis et au sol", "À cabrer, à basse vitesse"], "Inhibé volets sortis et au sol.")
+# ---- SB32
+q("SB32", "Limites de facteur de charge en loi normale, avion lisse :", ["+2,5 g / −1 g", "+2 g / 0 g", "+3,8 g / −1,52 g", "+4,4 g / −1,76 g"], "Volets sortis : +2 g / 0 g.")
+q("SB32", "Protection prioritaire sur toutes les autres :", ["L'incidence", "La vitesse", "L'inclinaison", "Le facteur de charge"], "")
+q("SB32", "À α FLOOR, l'autothrust…", ["Commande la poussée TO/GA", "Réduit au ralenti", "Se débraye", "Garde la poussée affichée"], "Quelle que soit la position des manettes.")
+q("SB32", "À V α MAX, minimanche en butée arrière, l'avion…", ["Garde α MAX sans décrocher", "Décroche puis récupère", "Revient à VLS", "Débraye les protections"], "Le trim à cabrer est inhibé. Si on lâche : retour à V α PROT.")
+q("SB32", "Protection grande vitesse :", ["Ordre à cabrer impossible à contrer", "Réduction automatique de poussée", "Sortie automatique des aérofreins", "Alarme sonore seulement"], "L'autothrust n'agit pas. Les ailes sont remises à plat.")
+q("SB32", "Limites d'assiette en loi normale :", ["30° à cabrer, 15° à piquer", "15° à cabrer, 30° à piquer", "25° à cabrer, 25° à piquer", "45° à cabrer, 20° à piquer"], "")
+q("SB32", "Inclinaison max en loi normale, et valeur de retour si on lâche :", ["67°, retour à 33°", "45°, retour à 0°", "67°, retour à 0°", "33°, retour à 15°"], "Le DV disparaît au-delà de 45°.")
+q("SB32", "Sur quel axe n'y a-t-il aucune protection ?", ["Le lacet (direction)", "Le tangage", "Le roulis", "Le facteur de charge"], "")
+q("SB32", "Loi appliquée après plusieurs pannes redondantes :", ["Alternate", "Normale", "Directe", "Mécanique"], "Normale : tout fonctionne ou une seule panne.")
+q("SB32", "Le « mode reversion », c'est…", ["Un changement de mode automatique pour rester dans le domaine", "Un retour forcé au pilotage manuel sans alarme", "Le passage de la loi normale à la loi directe", "L'inversion des commandes de vol en survitesse"], "")
+q("SB32", "Sur un avion sans protections, le stick pusher…", ["Pousse le manche à forte incidence", "Tire le manche en survitesse", "Remet les ailes à plat", "Réduit la poussée"], "Le stick puller, plus rare, tire le manche contre la survitesse.")
